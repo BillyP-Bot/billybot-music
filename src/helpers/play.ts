@@ -29,9 +29,39 @@ export class Queue<T = any> {
 	}
 }
 
+export class QueueManager<T = any> {
+	private queuesByKey: Record<string, Queue<T>>;
+	constructor() {
+		this.queuesByKey = {};
+	}
+	public initIfUndefined(key: string) {
+		if (!this.queuesByKey[key]) this.queuesByKey[key] = new Queue<T>();
+	}
+	public clear(key: string) {
+		if (this.queuesByKey[key]) delete this.queuesByKey[key];
+	}
+	public enqueue(item: T, key: string) {
+		this.initIfUndefined(key);
+		return this.queuesByKey[key]?.enqueue(item);
+	}
+	public dequeue(key: string) {
+		return this.queuesByKey[key]?.dequeue();
+	}
+	public front(key: string) {
+		return this.queuesByKey[key]?.front();
+	}
+	public length(key: string) {
+		this.initIfUndefined(key);
+		return this.queuesByKey[key]?.length();
+	}
+	public list(key: string) {
+		return this.queuesByKey[key]?.list();
+	}
+}
+
 export const DisTube: IDisTube = {
 	client: null,
-	queue: new Queue<Video>()
+	queue: new QueueManager<Video>()
 };
 
 export const initDisTubeClient = (client: Client) => {

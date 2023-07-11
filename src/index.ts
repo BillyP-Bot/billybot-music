@@ -63,7 +63,7 @@ client.on(Events.MessageCreate, async (msg) => {
 client.on(Events.VoiceStateUpdate, (oldState) => {
 	try {
 		// when bot leaves voice channel
-		if (oldState.member.user.bot && oldState.channelId) clearVideoQueue();
+		if (oldState.member.user.bot && oldState.channelId) clearVideoQueue(oldState.guild.id);
 	} catch (error) {
 		console.error({ error });
 	}

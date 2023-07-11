@@ -43,12 +43,13 @@ const play = async (
 			? await YouTube.getVideo(searchTextOrUrl)
 			: await YouTube.searchOne(searchTextOrUrl);
 		if (!video) throw "No results found!";
-		DisTube.queue.enqueue(video);
-		if (DisTube.queue.length() === 1) {
+		DisTube.queue.enqueue(video, textChannel.guildId);
+		if (DisTube.queue.length(textChannel.guildId) === 1) {
 			await playNextVideoInQueue(textChannel, voiceChannel);
 		} else {
 			await textChannel.send(
-				`✅ Queued Video:\n\`${video.title}\`\n\n` + getNowPlayingAndNextUp()
+				`✅ Queued Video:\n\`${video.title}\`\n\n` +
+					getNowPlayingAndNextUp(textChannel.guildId)
 			);
 		}
 	} catch (error) {
@@ -64,12 +65,12 @@ const play = async (
 };
 
 const playNextVideoInQueue = async (textChannel: TextChannel, voiceChannel: VoiceBasedChannel) => {
-	const video = DisTube.queue.front();
+	const video = DisTube.queue.front(textChannel.guildId);
 	if (!video) return exitAfterTimeoutIfQueueEmpty(voiceChannel.guild.id);
 	await DisTube.client.play(voiceChannel, video.url);
-	await textChannel.send(getNowPlayingAndNextUp());
+	await textChannel.send(getNowPlayingAndNextUp(textChannel.guildId));
 	DisTube.client.once(Events.FINISH_SONG, async () => {
-		DisTube.queue.dequeue();
+		DisTube.queue.dequeue(textChannel.guildId);
 		await playNextVideoInQueue(textChannel, voiceChannel);
 	});
 };
@@ -78,9 +79,9 @@ export const skipCommand: ISlashCommand = {
 	name: CommandNames.skip,
 	description: "Skip the track that is currently playing",
 	handler: async (int: ChatInputCommandInteraction) => {
-		if (!DisTube.queue.front()) throw "No track is currently playing!";
+		if (!DisTube.queue.front(int.guildId)) throw "No track is currently playing!";
 		await int.reply("⏭️ Skipping track...");
-		DisTube.client.seek(int.guild.id, DisTube.queue.front().duration);
+		DisTube.client.seek(int.guild.id, DisTube.queue.front(int.guildId).duration);
 	}
 };
 
@@ -88,8 +89,8 @@ export const queueCommand: ISlashCommand = {
 	name: CommandNames.queue,
 	description: "List the track currently playing along with the upcoming tracks in the queue",
 	handler: async (int: ChatInputCommandInteraction) => {
-		if (DisTube.queue.length() === 0) throw "No tracks in the queue!";
-		await int.reply(getNowPlayingAndNextUp());
+		if (DisTube.queue.length(int.guildId) === 0) throw "No tracks in the queue!";
+		await int.reply(getNowPlayingAndNextUp(int.guildId));
 	}
 };
 
@@ -97,21 +98,21 @@ export const clearQueueCommand: ISlashCommand = {
 	name: CommandNames.clearqueue,
 	description: "Clears all tracks from the YouTube queue",
 	handler: async (int: ChatInputCommandInteraction) => {
-		if (DisTube.queue.length() === 0) throw "No tracks in the queue!";
-		clearVideoQueue();
+		if (DisTube.queue.length(int.guildId) === 0) throw "No tracks in the queue!";
+		clearVideoQueue(int.guildId);
 		await int.reply("Queue cleared!");
 	}
 };
 
-export const clearVideoQueue = () => {
-	DisTube.queue.clear();
+export const clearVideoQueue = (guild_id: string) => {
+	DisTube.queue.clear(guild_id);
 };
 
-const getNowPlayingAndNextUp = () => {
-	let text = `▶️ Now Playing:\n\`${DisTube.queue.front().title}\`\n\n`;
-	if (DisTube.queue.length() > 1) {
+const getNowPlayingAndNextUp = (guild_id: string) => {
+	let text = `▶️ Now Playing:\n\`${DisTube.queue.front(guild_id).title}\`\n\n`;
+	if (DisTube.queue.length(guild_id) > 1) {
 		text += "🎶 Next Up:\n";
-		text += DisTube.queue.list().reduce((acc, { title }, i) => {
+		text += DisTube.queue.list(guild_id).reduce((acc, { title }, i) => {
 			return acc + (i > 0 ? `**${i}.** \`${title}\`\n` : "");
 		}, "");
 	}
@@ -120,6 +121,6 @@ const getNowPlayingAndNextUp = () => {
 
 const exitAfterTimeoutIfQueueEmpty = (guild_id: string) => {
 	setTimeout(() => {
-		if (!DisTube.queue.front()) DisTube.client.voices.leave(guild_id);
+		if (!DisTube.queue.front(guild_id)) DisTube.client.voices.leave(guild_id);
 	}, INACTIVITY_SEC * 1000);
 };

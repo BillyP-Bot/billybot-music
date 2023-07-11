@@ -8,7 +8,7 @@ import {
 import { DisTube } from "distube";
 import { Video } from "youtube-sr";
 
-import { Queue } from "@helpers";
+import { QueueManager } from "@helpers";
 
 export interface ISlashCommand {
 	id?: string;
@@ -33,5 +33,5 @@ export type ISlashCommandOption = ApplicationCommandOption & {
 
 export interface IDisTube {
 	client: DisTube;
-	queue: Queue<Video>;
+	queue: QueueManager<Video>;
 }
