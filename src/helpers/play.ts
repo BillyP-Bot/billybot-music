@@ -51,8 +51,7 @@ export class QueueManager<T = any> {
 		return this.queuesByKey[key]?.front();
 	}
 	public length(key: string) {
-		this.initIfUndefined(key);
-		return this.queuesByKey[key]?.length();
+		return this.queuesByKey[key]?.length() ?? 0;
 	}
 	public list(key: string) {
 		return this.queuesByKey[key]?.list();
