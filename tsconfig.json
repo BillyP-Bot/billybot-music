@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "target": "es6",
+    "noImplicitAny": true,
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "outDir": "build",
+    "baseUrl": ".",
+    "declaration": false,
+    "declarationMap": false,
+    "emitDecoratorMetadata": true,
+    "skipLibCheck": true,
+    "paths": {
+      "*": ["node_modules/*"],
+      "@commands": ["src/commands"],
+      "@helpers": ["src/helpers"],
+      "@reactions": ["src/reactions"],
+      "@types": ["src/types"],
+      "@enums": ["src/types/enums"]
+    }
+  },
+  "include": ["src/**/*"]
+}
