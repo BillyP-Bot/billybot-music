@@ -121,6 +121,6 @@ const getNowPlayingAndNextUp = (guild_id: string) => {
 
 const exitAfterTimeoutIfQueueEmpty = (guild_id: string) => {
 	setTimeout(() => {
-		if (!DisTube.queue.front(guild_id)) DisTube.client.voices.collection.get(guild_id)?.leave();
+		if (!DisTube.queue.front(guild_id)) DisTube.client.voices.leave(guild_id);
 	}, INACTIVITY_SEC * 1000);
 };
