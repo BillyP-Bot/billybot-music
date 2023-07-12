@@ -3,14 +3,15 @@ import { ISlashCommand } from "@types";
 import {
 	clearQueueCommand,
 	clearVideoQueue,
-	playYoutubeCommand,
+	initDisTubeClient,
+	playCommand,
 	queueCommand,
 	skipCommand
-} from "./play-youtube-video";
+} from "./distube";
 
 export const commands: ISlashCommand[] = [
 	clearQueueCommand,
-	playYoutubeCommand,
+	playCommand,
 	queueCommand,
 	skipCommand
 ];
@@ -20,4 +21,11 @@ export const commandsLookup = commands.reduce((acc, command) => {
 	return acc;
 }, {} as Record<string, ISlashCommand>);
 
-export { clearQueueCommand, clearVideoQueue, playYoutubeCommand, queueCommand, skipCommand };
+export {
+	clearQueueCommand,
+	clearVideoQueue,
+	initDisTubeClient,
+	playCommand,
+	queueCommand,
+	skipCommand
+};

@@ -5,10 +5,6 @@ import {
 	MessageReaction,
 	Permissions
 } from "discord.js";
-import { DisTube } from "distube";
-import { Video } from "youtube-sr";
-
-import { QueueManager } from "@helpers";
 
 export interface ISlashCommand {
 	id?: string;
@@ -30,8 +26,3 @@ export type ISlashCommandOption = ApplicationCommandOption & {
 	min_length?: number;
 	max_length?: number;
 };
-
-export interface IDisTube {
-	client: DisTube;
-	queue: QueueManager<Video>;
-}

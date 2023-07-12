@@ -1,13 +1,7 @@
-import { Client, Events, GatewayIntentBits } from "discord.js";
+import { Client, Events, GatewayIntentBits, TextChannel } from "discord.js";
 
-import { clearVideoQueue, commandsLookup } from "@commands";
-import {
-	config,
-	Embed,
-	initDisTubeClient,
-	registerSlashCommands,
-	sendLegacyCommandDeprecationNotice
-} from "@helpers";
+import { clearVideoQueue, commandsLookup, initDisTubeClient } from "@commands";
+import { config, Embed, registerSlashCommands, sendLegacyCommandDeprecationNotice } from "@helpers";
 
 process.on("unhandledRejection", (error) => {
 	console.error({ error });
@@ -53,6 +47,8 @@ client.on(Events.InteractionCreate, async (int) => {
 client.on(Events.MessageCreate, async (msg) => {
 	try {
 		if (msg.author.bot) return;
+		const channel = msg.channel as TextChannel;
+		if (channel?.name?.includes("test") && config.IS_PROD) return;
 		if (msg.content[0] === "!") return await sendLegacyCommandDeprecationNotice(msg);
 	} catch (error) {
 		console.error({ error });
@@ -63,7 +59,8 @@ client.on(Events.MessageCreate, async (msg) => {
 client.on(Events.VoiceStateUpdate, (oldState) => {
 	try {
 		// when bot leaves voice channel
-		if (oldState.member.user.bot && oldState.channelId) clearVideoQueue(oldState.guild.id);
+		if (oldState.member.id === client.user.id && oldState.channelId)
+			clearVideoQueue(oldState.guild.id);
 	} catch (error) {
 		console.error({ error });
 	}
