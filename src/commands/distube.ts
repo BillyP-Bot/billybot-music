@@ -18,12 +18,17 @@ export const initDisTubeClient = (client: Client) => {
 		leaveOnFinish: false,
 		nsfw: true
 	});
+	DisTube.on(Events.INIT_QUEUE, (queue) => {
+		DisTube.setVolume(queue, 70);
+	});
 	DisTube.on(Events.ADD_SONG, async (queue, video) => {
 		if (queue.songs.length <= 1) return;
-		await queue.textChannel?.send(`✅ Queued Video:\n${video.name}`);
+		await queue.textChannel?.send(
+			`✅ Queued Video:\n${video.name}\n\n${getNowPlayingAndNextUp(queue)}`
+		);
 	});
 	DisTube.on(Events.PLAY_SONG, async (queue) => {
-		await queue.textChannel?.send(getNowPlayingAndNextUp(queue));
+		await queue.textChannel?.send(getNowPlayingAndNextUp(queue, true));
 	});
 	DisTube.on(Events.FINISH, (queue) => {
 		exitAfterTimeoutIfQueueEmpty(queue);
@@ -96,7 +101,7 @@ export const clearQueueCommand: ISlashCommand = {
 	handler: async (int: ChatInputCommandInteraction) => {
 		if (isQueueEmpty(int.guildId)) throw "No tracks in the queue!";
 		clearVideoQueue(int.guildId);
-		await int.reply("Queue cleared!");
+		await int.reply({ embeds: [Embed.success("Queue cleared!")] });
 	}
 };
 
@@ -105,9 +110,9 @@ export const clearVideoQueue = (guild_id: string) => {
 	if (queue) queue.stop();
 };
 
-const getNowPlayingAndNextUp = (queue: Queue) => {
+const getNowPlayingAndNextUp = (queue: Queue, showLink?: boolean) => {
 	const current = queue.songs[0];
-	let text = `▶️ Now Playing:\n\`${current.name}\`\n${current.url}\n\n`;
+	let text = `▶️ Now Playing:\n\`${current.name}\`${showLink ? `\n${current.url}` : ""}\n\n`;
 	if (queue.songs.length > 1) {
 		text += "🎶 Next Up:\n";
 		text += queue.songs.reduce((acc, { name }, i) => {
