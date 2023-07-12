@@ -112,7 +112,9 @@ export const clearVideoQueue = (guild_id: string) => {
 
 const getNowPlayingAndNextUp = (queue: Queue, showLink?: boolean) => {
 	const current = queue.songs[0];
-	let text = `▶️ Now Playing:\n\`${current.name}\`${showLink ? `\n${current.url}` : ""}\n\n`;
+	let text = `▶️ Now Playing:\n\`${current.name}\`${
+		showLink ? `\n${current.url}\n${current.formattedDuration}` : ""
+	}\n\n`;
 	if (queue.songs.length > 1) {
 		text += "🎶 Next Up:\n";
 		text += queue.songs.reduce((acc, { name }, i) => {
