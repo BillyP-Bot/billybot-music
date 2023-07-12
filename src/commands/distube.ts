@@ -3,7 +3,7 @@ import DisTubeClient, { Events, Queue } from "distube";
 import YouTube from "youtube-sr";
 
 import { CommandNames } from "@enums";
-import { getInteractionOptionValue, isValidURL } from "@helpers";
+import { Embed, getInteractionOptionValue, isValidURL } from "@helpers";
 import { ISlashCommand } from "@types";
 
 const INACTIVITY_SEC = 60;
@@ -62,7 +62,7 @@ export const playCommand: ISlashCommand = {
 				textChannel: int.channel
 			});
 		} catch (error) {
-			await int.channel.send("Error playing video!");
+			await int.channel.send({ embeds: [Embed.error("Error playing video!")] });
 			console.error({ error });
 		}
 	}
