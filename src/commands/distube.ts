@@ -19,7 +19,7 @@ export const initDisTubeClient = (client: Client) => {
 		nsfw: true
 	});
 	DisTube.on(Events.INIT_QUEUE, (queue) => {
-		DisTube.setVolume(queue, 70);
+		DisTube.setVolume(queue, 40);
 	});
 	DisTube.on(Events.ADD_SONG, async (queue, video) => {
 		if (queue.songs.length <= 1) return;
