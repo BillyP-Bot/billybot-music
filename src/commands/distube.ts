@@ -25,10 +25,10 @@ export const initDisTubeClient = (client: Client) => {
 	DisTube.on(Events.PLAY_SONG, async (queue) => {
 		await queue.textChannel?.send(getNowPlayingAndNextUp(queue));
 	});
-	DisTube.on(Events.FINISH, async (queue) => {
+	DisTube.on(Events.FINISH, (queue) => {
 		exitAfterTimeoutIfQueueEmpty(queue);
 	});
-	DisTube.on(Events.DELETE_QUEUE, async (queue) => {
+	DisTube.on(Events.DELETE_QUEUE, (queue) => {
 		exitAfterTimeoutIfQueueEmpty(queue);
 	});
 	DisTube.on(Events.ERROR, (_textChannel, error) => {
