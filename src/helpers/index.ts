@@ -3,4 +3,4 @@ export { getInteractionOptionValue, sendLegacyCommandDeprecationNotice } from ".
 export { config } from "./config";
 export { Embed } from "./embed";
 export { registerSlashCommands } from "./slash";
-export { isValidURL } from "./util";
+export { logError } from "./util";

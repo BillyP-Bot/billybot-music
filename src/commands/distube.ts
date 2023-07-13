@@ -5,7 +5,7 @@ import { SoundCloudPlugin } from "@distube/soundcloud";
 import { SpotifyPlugin } from "@distube/spotify";
 import { YtDlpPlugin } from "@distube/yt-dlp";
 import { CommandNames } from "@enums";
-import { Embed, getInteractionOptionValue } from "@helpers";
+import { Embed, getInteractionOptionValue, logError } from "@helpers";
 import { ISlashCommand } from "@types";
 
 const INACTIVITY_SEC = 60;
@@ -50,7 +50,7 @@ export const initDisTubeClient = (client: Client) => {
 	});
 	DisTube.on(Events.ERROR, async (channel, error) => {
 		await channel.send(`Error: ${error}`);
-		console.error({ error });
+		logError(error);
 	});
 };
 
@@ -78,7 +78,7 @@ export const playCommand: ISlashCommand = {
 			});
 		} catch (error) {
 			await int.channel.send({ embeds: [Embed.error(error.message)] });
-			console.error({ error });
+			logError(error);
 		}
 	}
 };
