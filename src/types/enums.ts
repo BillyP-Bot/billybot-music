@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 export enum CommandNames {
 	clearqueue = "clearqueue",
+	filter = "filter",
 	p = "p",
 	queue = "queue",
 	skip = "skip"

@@ -105,6 +105,59 @@ export const clearQueueCommand: ISlashCommand = {
 	}
 };
 
+export const filterCommand: ISlashCommand = {
+	name: CommandNames.filter,
+	description: "Apply a filter to the audio currently playing",
+	options: [
+		{
+			name: "filter",
+			description: "The audio filter to apply",
+			type: ApplicationCommandOptionType.String,
+			required: true,
+			choices: [
+				{
+					name: "none",
+					value: ""
+				},
+				{
+					name: "bassboost",
+					value: "bassboost"
+				},
+				{
+					name: "echo",
+					value: "echo"
+				},
+				{
+					name: "karaoke",
+					value: "karaoke"
+				},
+				{
+					name: "nightcore",
+					value: "nightcore"
+				},
+				{
+					name: "vaporwave",
+					value: "vaporwave"
+				}
+			]
+		}
+	],
+	handler: async (int: ChatInputCommandInteraction) => {
+		if (isQueueEmpty(int.guildId)) throw "No tracks in the queue!";
+		const filter = getInteractionOptionValue<string>("filter", int);
+		const queue = DisTube.getQueue(int.guildId);
+		if (!filter) {
+			if (queue.filters.names.length === 0) throw "No audio filters applied!";
+			queue.filters.clear();
+			int.reply({ embeds: [Embed.success("🎛️ Audio filter cleared!")] });
+		} else {
+			queue.filters.clear();
+			queue.filters.add(filter);
+			int.reply({ embeds: [Embed.success(`🎛️ Audio filter applied: \`${filter}\``)] });
+		}
+	}
+};
+
 export const clearVideoQueue = (guild_id: string) => {
 	const queue = DisTube.getQueue(guild_id);
 	if (queue) queue.stop();

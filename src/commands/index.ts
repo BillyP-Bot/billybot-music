@@ -3,6 +3,7 @@ import { ISlashCommand } from "@types";
 import {
 	clearQueueCommand,
 	clearVideoQueue,
+	filterCommand,
 	initDisTubeClient,
 	playCommand,
 	queueCommand,
@@ -11,6 +12,7 @@ import {
 
 export const commands: ISlashCommand[] = [
 	clearQueueCommand,
+	filterCommand,
 	playCommand,
 	queueCommand,
 	skipCommand
@@ -24,6 +26,7 @@ export const commandsLookup = commands.reduce((acc, command) => {
 export {
 	clearQueueCommand,
 	clearVideoQueue,
+	filterCommand,
 	initDisTubeClient,
 	playCommand,
 	queueCommand,
