@@ -30,6 +30,7 @@ client.once(Events.ClientReady, async () => {
 client.on(Events.InteractionCreate, async (int) => {
 	try {
 		if (int.channel.name.includes("test") && config.IS_PROD) return;
+		if (!int.channel.name.includes("test") && !config.IS_PROD) return;
 		if (int.isChatInputCommand()) {
 			const command = commandsLookup[int.commandName];
 			if (command) return await command.handler(int);
@@ -48,7 +49,8 @@ client.on(Events.MessageCreate, async (msg) => {
 	try {
 		if (msg.author.bot) return;
 		const channel = msg.channel as TextChannel;
-		if (channel?.name?.includes("test") && config.IS_PROD) return;
+		if (channel.name?.includes("test") && config.IS_PROD) return;
+		if (channel.name && !channel.name?.includes("test") && !config.IS_PROD) return;
 		if (msg.content[0] === "!") return await sendLegacyCommandDeprecationNotice(msg);
 	} catch (error) {
 		console.error({ error });
