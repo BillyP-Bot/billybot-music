@@ -151,7 +151,7 @@ export const filterCommand: ISlashCommand = {
 			queue.filters.clear();
 			int.reply({ embeds: [Embed.success("🎛️ Audio filter cleared!")] });
 		} else {
-			queue.filters.clear();
+			if (queue.filters.names.length > 0) queue.filters.clear();
 			queue.filters.add(filter);
 			int.reply({ embeds: [Embed.success(`🎛️ Audio filter applied: \`${filter}\``)] });
 		}
