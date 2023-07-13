@@ -1,9 +1,11 @@
 import { ApplicationCommandOptionType, ChatInputCommandInteraction, Client } from "discord.js";
 import DisTubeClient, { Events, Queue } from "distube";
-import YouTube from "youtube-sr";
 
+import { SoundCloudPlugin } from "@distube/soundcloud";
+import { SpotifyPlugin } from "@distube/spotify";
+import { YtDlpPlugin } from "@distube/yt-dlp";
 import { CommandNames } from "@enums";
-import { Embed, getInteractionOptionValue, isValidURL } from "@helpers";
+import { Embed, getInteractionOptionValue } from "@helpers";
 import { ISlashCommand } from "@types";
 
 const INACTIVITY_SEC = 60;
@@ -16,7 +18,14 @@ export const initDisTubeClient = (client: Client) => {
 		leaveOnStop: false,
 		leaveOnEmpty: true,
 		leaveOnFinish: false,
-		nsfw: true
+		nsfw: true,
+		plugins: [
+			new SpotifyPlugin({
+				emitEventsAfterFetching: true
+			}),
+			new SoundCloudPlugin(),
+			new YtDlpPlugin()
+		]
 	});
 	DisTube.on(Events.INIT_QUEUE, (queue) => {
 		DisTube.setVolume(queue, 30);
@@ -36,18 +45,22 @@ export const initDisTubeClient = (client: Client) => {
 	DisTube.on(Events.DELETE_QUEUE, (queue) => {
 		exitAfterTimeoutIfQueueEmpty(queue);
 	});
-	DisTube.on(Events.ERROR, (_textChannel, error) => {
+	DisTube.on(Events.SEARCH_NO_RESULT, async (message) => {
+		await message.channel.send("No results found}!");
+	});
+	DisTube.on(Events.ERROR, async (channel, error) => {
+		await channel.send(`Error: ${error}`);
 		console.error({ error });
 	});
 };
 
 export const playCommand: ISlashCommand = {
 	name: CommandNames.p,
-	description: "Play a YouTube video in the current voice channel",
+	description: "Play audio from YouTube, Spotify, or SoundCloud in the current voice channel",
 	options: [
 		{
 			name: "search",
-			description: "Video URL or text to search YouTube for (plays first result)",
+			description: "Video URL or text to search for (plays first result)",
 			type: ApplicationCommandOptionType.String,
 			required: true
 		}
@@ -56,18 +69,15 @@ export const playCommand: ISlashCommand = {
 		const searchTextOrUrl = getInteractionOptionValue<string>("search", int);
 		const voiceChannel = int.guild.members.cache.get(int.member.user.id)?.voice?.channel;
 		if (!voiceChannel) throw "You must be in a voice channel to use this command!";
-		await int.reply(`Searching YouTube for \`${searchTextOrUrl}\`...`);
+		await int.reply(`Searching for \`${searchTextOrUrl}\`...`);
 		try {
-			const video = isValidURL(searchTextOrUrl)
-				? await YouTube.getVideo(searchTextOrUrl)
-				: await YouTube.searchOne(searchTextOrUrl);
-			if (!video) throw "No results found!";
 			await DisTube.play(voiceChannel, searchTextOrUrl, {
 				position: 0,
-				textChannel: int.channel
+				textChannel: int.channel,
+				message: await int.fetchReply()
 			});
 		} catch (error) {
-			await int.channel.send({ embeds: [Embed.error("Error playing video!")] });
+			await int.channel.send({ embeds: [Embed.error(error.message)] });
 			console.error({ error });
 		}
 	}
@@ -76,12 +86,26 @@ export const playCommand: ISlashCommand = {
 export const skipCommand: ISlashCommand = {
 	name: CommandNames.skip,
 	description: "Skip the track that is currently playing",
+	options: [
+		{
+			name: "to",
+			description: "Position of a specific track in the queue to skip directly to",
+			type: ApplicationCommandOptionType.Integer,
+			min_value: 1,
+			required: false
+		}
+	],
 	handler: async (int: ChatInputCommandInteraction) => {
 		if (isQueueEmpty(int.guildId)) throw "No tracks in the queue!";
+		const jumpTo = getInteractionOptionValue<number>("to", int);
 		const queue = DisTube.getQueue(int.guildId);
-		const action =
-			queue.songs.length > 1 ? () => DisTube.skip(int.guildId) : () => queue.stop();
-		await Promise.all([int.reply("⏭️ Skipping track..."), action()]);
+		if (!jumpTo && queue.songs.length === 1)
+			return await Promise.all([int.reply("⏭️ Skipping track..."), queue.stop()]);
+		if ((jumpTo ?? 1) >= queue.songs.length) throw "Invalid track position!";
+		await Promise.all([
+			int.reply(jumpTo ? `⏭️ Skipping to track ${jumpTo}...` : "⏭️ Skipping track..."),
+			DisTube.jump(int.guildId, jumpTo ?? 1)
+		]);
 	}
 };
 
@@ -101,7 +125,7 @@ export const clearQueueCommand: ISlashCommand = {
 	handler: async (int: ChatInputCommandInteraction) => {
 		if (isQueueEmpty(int.guildId)) throw "No tracks in the queue!";
 		clearVideoQueue(int.guildId);
-		await int.reply({ embeds: [Embed.success("Queue cleared!")] });
+		await int.reply({ embeds: [Embed.success("✅ Queue cleared!")] });
 	}
 };
 
@@ -149,11 +173,11 @@ export const filterCommand: ISlashCommand = {
 		if (!filter) {
 			if (queue.filters.names.length === 0) throw "No audio filters applied!";
 			queue.filters.clear();
-			int.reply({ embeds: [Embed.success("🎛️ Audio filter cleared!")] });
+			int.reply({ embeds: [Embed.success("✅ Audio filter cleared!")] });
 		} else {
 			if (queue.filters.names.length > 0) queue.filters.clear();
 			queue.filters.add(filter);
-			int.reply({ embeds: [Embed.success(`🎛️ Audio filter applied: \`${filter}\``)] });
+			int.reply({ embeds: [Embed.success(`✅ Audio filter applied: \`${filter}\``)] });
 		}
 	}
 };
@@ -163,10 +187,10 @@ export const clearVideoQueue = (guild_id: string) => {
 	if (queue) queue.stop();
 };
 
-const getNowPlayingAndNextUp = (queue: Queue, showLink?: boolean) => {
+const getNowPlayingAndNextUp = (queue: Queue, showExtraInfo?: boolean) => {
 	const current = queue.songs[0];
 	let text = `▶️ Now Playing:\n\`${current.name}\`${
-		showLink ? `\n${current.url}\n${current.formattedDuration}` : ""
+		showExtraInfo ? `\n⏱️ \`${current.formattedDuration}\`\n${current.url}` : ""
 	}\n\n`;
 	if (queue.songs.length > 1) {
 		text += "🎶 Next Up:\n";
