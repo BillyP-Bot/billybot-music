@@ -30,10 +30,10 @@ export const initDisTubeClient = (client: Client) => {
 	DisTube.on(Events.INIT_QUEUE, (queue) => {
 		DisTube.setVolume(queue, 40);
 	});
-	DisTube.on(Events.ADD_SONG, async (queue, video) => {
+	DisTube.on(Events.ADD_SONG, async (queue, song) => {
 		if (queue.songs.length <= 1) return;
 		await queue.textChannel?.send(
-			`✅ Queued Video:\n${video.name}\n\n${getNowPlayingAndNextUp(queue)}`
+			`✅ Queued Track:\n${song.name}\n\n${getNowPlayingAndNextUp(queue)}`
 		);
 	});
 	DisTube.on(Events.PLAY_SONG, async (queue) => {
@@ -60,21 +60,22 @@ export const playCommand: ISlashCommand = {
 	options: [
 		{
 			name: "search",
-			description: "Video URL or text to search for (plays first result)",
+			description: "URL or text to search for (plays top result)",
 			type: ApplicationCommandOptionType.String,
 			required: true
 		}
 	],
 	handler: async (int: ChatInputCommandInteraction) => {
 		const searchTextOrUrl = getInteractionOptionValue<string>("search", int);
-		const voiceChannel = int.guild.members.cache.get(int.member.user.id)?.voice?.channel;
+		const member = int.guild.members.cache.get(int.member.user.id);
+		const voiceChannel = member?.voice?.channel;
 		if (!voiceChannel) throw "You must be in a voice channel to use this command!";
 		await int.reply(`Searching for \`${searchTextOrUrl}\`...`);
 		try {
 			await DisTube.play(voiceChannel, searchTextOrUrl, {
-				position: 0,
 				textChannel: int.channel,
-				message: await int.fetchReply()
+				message: await int.fetchReply(),
+				member
 			});
 		} catch (error) {
 			await int.channel.send({ embeds: [Embed.error(error.message)] });
@@ -97,14 +98,14 @@ export const skipCommand: ISlashCommand = {
 	],
 	handler: async (int: ChatInputCommandInteraction) => {
 		if (isQueueEmpty(int.guildId)) throw "No tracks in the queue!";
-		const jumpTo = getInteractionOptionValue<number>("to", int);
+		const skipTo = getInteractionOptionValue<number>("to", int);
 		const queue = DisTube.getQueue(int.guildId);
-		if (!jumpTo && queue.songs.length === 1)
+		if (!skipTo && queue.songs.length === 1)
 			return await Promise.all([int.reply("⏭️ Skipping track..."), queue.stop()]);
-		if ((jumpTo ?? 1) >= queue.songs.length) throw "Invalid track position!";
+		if ((skipTo ?? 1) >= queue.songs.length) throw "Invalid track position!";
 		await Promise.all([
-			int.reply(jumpTo ? `⏭️ Skipping to track ${jumpTo}...` : "⏭️ Skipping track..."),
-			DisTube.jump(int.guildId, jumpTo ?? 1)
+			int.reply(skipTo ? `⏭️ Skipping to track ${skipTo}...` : "⏭️ Skipping track..."),
+			DisTube.jump(int.guildId, skipTo ?? 1)
 		]);
 	}
 };
@@ -121,7 +122,7 @@ export const queueCommand: ISlashCommand = {
 
 export const clearQueueCommand: ISlashCommand = {
 	name: CommandNames.clearqueue,
-	description: "Clears all tracks from the YouTube queue",
+	description: "Clear all tracks from the queue",
 	handler: async (int: ChatInputCommandInteraction) => {
 		if (isQueueEmpty(int.guildId)) throw "No tracks in the queue!";
 		clearVideoQueue(int.guildId);
