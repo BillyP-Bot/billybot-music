@@ -46,7 +46,7 @@ export const initDisTubeClient = (client: Client) => {
 		exitAfterTimeoutIfQueueEmpty(queue);
 	});
 	DisTube.on(Events.SEARCH_NO_RESULT, async (message) => {
-		await message.channel.send("No results found}!");
+		await message.channel.send("No results found!");
 	});
 	DisTube.on(Events.ERROR, async (channel, error) => {
 		await channel.send(`Error: ${error}`);
