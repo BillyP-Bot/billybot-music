@@ -33,7 +33,7 @@ export const initDisTubeClient = (client: Client) => {
 	DisTube.on(Events.ADD_SONG, async (queue, song) => {
 		if (queue.songs.length <= 1) return;
 		await queue.textChannel?.send(
-			`✅ Queued Track:\n${song.name}\n\n${getNowPlayingAndNextUp(queue)}`
+			`✅ Queued Track:\n\`${song.name}\`\n\n${getNowPlayingAndNextUp(queue)}`
 		);
 	});
 	DisTube.on(Events.PLAY_SONG, async (queue) => {
@@ -168,15 +168,19 @@ export const filterCommand: ISlashCommand = {
 		}
 	],
 	handler: async (int: ChatInputCommandInteraction) => {
+		const member = int.guild.members.cache.get(int.member.user.id);
+		const memberVoiceChannel = member?.voice?.channel;
+		const botVoiceChannel = DisTube.voices.get(int.guildId)?.channel;
+		if (!memberVoiceChannel || !botVoiceChannel || memberVoiceChannel !== botVoiceChannel)
+			throw "You must be in the same voice channel as the bot to use this command!";
 		if (isQueueEmpty(int.guildId)) throw "No tracks in the queue!";
 		const filter = getInteractionOptionValue<string>("filter", int);
 		const queue = DisTube.getQueue(int.guildId);
 		if (!filter) {
-			if (queue.filters.names.length === 0) throw "No audio filters applied!";
+			if (queue.filters.names.length === 0) throw "No audio filters currently applied!";
 			queue.filters.clear();
 			int.reply({ embeds: [Embed.success("✅ Audio filter cleared!")] });
 		} else {
-			if (queue.filters.names.length > 0) queue.filters.clear();
 			queue.filters.add(filter);
 			int.reply({ embeds: [Embed.success(`✅ Audio filter applied: \`${filter}\``)] });
 		}
