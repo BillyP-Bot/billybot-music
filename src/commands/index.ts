@@ -18,10 +18,13 @@ export const commands: ISlashCommand[] = [
 	skipCommand
 ];
 
-export const commandsLookup = commands.reduce((acc, command) => {
-	acc[command.name] = command;
-	return acc;
-}, {} as Record<string, ISlashCommand>);
+export const commandsLookup = commands.reduce(
+	(acc, command) => {
+		acc[command.name] = command;
+		return acc;
+	},
+	{} as Record<string, ISlashCommand>
+);
 
 export {
 	clearQueueCommand,

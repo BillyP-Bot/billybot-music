@@ -1,8 +1,6 @@
-import "dotenv/config";
-
-export const config = {
-	IS_PROD: process.env.NODE_ENV == "production" ? true : false,
-	BOT_TOKEN: process.env.BOT_TOKEN || undefined
+export const Config = {
+	IS_PROD: Bun.env.NODE_ENV === "production",
+	BOT_TOKEN: Bun.env.BOT_TOKEN || undefined
 };
 
-if (config.BOT_TOKEN === undefined) throw Error("BOT_TOKEN not specified");
+if (Config.BOT_TOKEN === undefined) throw Error("BOT_TOKEN not specified");

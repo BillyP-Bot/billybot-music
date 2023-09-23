@@ -1,6 +1,6 @@
-export { DiscordApi } from "./api";
-export { getInteractionOptionValue, sendLegacyCommandDeprecationNotice } from "./command";
-export { config } from "./config";
-export { Embed } from "./embed";
-export { registerSlashCommands } from "./slash";
-export { logError } from "./util";
+export * from "./api";
+export * from "./command";
+export * from "./config";
+export * from "./embed";
+export * from "./slash";
+export * from "./util";
