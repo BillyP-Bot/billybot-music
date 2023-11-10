@@ -9,6 +9,11 @@ import { Embed, getInteractionOptionValue, logError } from "@helpers";
 import { ISlashCommand } from "@types";
 
 const INACTIVITY_SEC = 60;
+const GOODBYE_URL = "https://www.youtube.com/watch?v=F2Z2CklSxM0";
+
+interface SongMetadata {
+	isGoodbye: Boolean;
+}
 
 let DisTube: DisTubeClient;
 
@@ -36,14 +41,20 @@ export const initDisTubeClient = (client: Client) => {
 			`✅ Queued Track:\n\`${song.name}\`\n\n${getNowPlayingAndNextUp(queue)}`
 		);
 	});
-	DisTube.on(Events.PLAY_SONG, async (queue) => {
+	DisTube.on(Events.PLAY_SONG, async (queue, song) => {
+		console.log("play song event");
 		await queue.textChannel?.send(getNowPlayingAndNextUp(queue, true));
 	});
+	DisTube.on(Events.FINISH_SONG, (queue, song) => {
+		const metadata: SongMetadata = song?.metadata as SongMetadata
+		if (metadata?.isGoodbye)
+			exitAfterGoodbye(queue);
+	});
 	DisTube.on(Events.FINISH, (queue) => {
-		exitAfterTimeoutIfQueueEmpty(queue);
+		playGoodbyeAfterTimeoutIfQueueEmpty(queue);
 	});
 	DisTube.on(Events.DELETE_QUEUE, (queue) => {
-		exitAfterTimeoutIfQueueEmpty(queue);
+		playGoodbyeAfterTimeoutIfQueueEmpty(queue);
 	});
 	DisTube.on(Events.SEARCH_NO_RESULT, async (message) => {
 		await message.channel.send("No results found!");
@@ -212,10 +223,23 @@ const isQueueEmpty = (guild_id: string) => {
 	return false;
 };
 
-const exitAfterTimeoutIfQueueEmpty = (queue: Queue) => {
-	setTimeout(() => {
+const playGoodbyeAfterTimeoutIfQueueEmpty = (queue: Queue) => {
+	setTimeout(async () => {
 		const guildId = queue?.voiceChannel?.guildId;
-		if (guildId && DisTube.voices.get(guildId) && isQueueEmpty(guildId))
-			DisTube.voices.leave(guildId);
+		if (guildId && DisTube.voices.get(guildId) && isQueueEmpty(guildId)){
+			try{
+				await DisTube.play(queue.voiceChannel, GOODBYE_URL, {
+					metadata : { isGoodbye: true }
+				});
+			} catch (error) {
+				logError(error);
+				DisTube.voices.leave(guildId);
+			}
+		}
 	}, INACTIVITY_SEC * 1000);
+};
+
+const exitAfterGoodbye = (queue: Queue) => {
+	const guildId = queue?.voiceChannel?.guildId;
+	DisTube.voices.leave(guildId);
 };
