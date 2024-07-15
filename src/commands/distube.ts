@@ -20,17 +20,8 @@ let DisTube: DisTubeClient;
 export const initDisTubeClient = (client: Client) => {
 	if (DisTube) return;
 	DisTube = new DisTubeClient(client, {
-		leaveOnStop: false,
-		leaveOnEmpty: true,
-		leaveOnFinish: false,
 		nsfw: true,
-		plugins: [
-			new SpotifyPlugin({
-				emitEventsAfterFetching: true
-			}),
-			new SoundCloudPlugin(),
-			new YtDlpPlugin()
-		]
+		plugins: [new SpotifyPlugin(), new SoundCloudPlugin(), new YtDlpPlugin()]
 	});
 	DisTube.on(Events.INIT_QUEUE, (queue) => {
 		DisTube.setVolume(queue, 40);
@@ -54,11 +45,11 @@ export const initDisTubeClient = (client: Client) => {
 	DisTube.on(Events.DELETE_QUEUE, (queue) => {
 		playGoodbyeAfterTimeoutIfQueueEmpty(queue);
 	});
-	DisTube.on(Events.SEARCH_NO_RESULT, async (message) => {
-		await message.channel.send("No results found!");
+	DisTube.on(Events.NO_RELATED, async (queue) => {
+		await queue.textChannel?.send("No results found!");
 	});
-	DisTube.on(Events.ERROR, async (channel, error) => {
-		await channel.send(`Error: ${error}`);
+	DisTube.on(Events.ERROR, async (error, queue) => {
+		await queue.textChannel?.send(`Error: ${error}`);
 		logError(error);
 	});
 };
