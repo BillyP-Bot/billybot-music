@@ -10,7 +10,7 @@ interface SongMetadata {
 
 export const createDistTubeEventHandlers = (distubeClient: DisTubeClient) => {
 	distubeClient.on(DisTubeEvents.INIT_QUEUE, queue => {
-		distubeClient.setVolume(queue, 25);
+		distubeClient.setVolume(queue, 30);
 	});
 
 	distubeClient.on(DisTubeEvents.ADD_SONG, async (queue, song) => {

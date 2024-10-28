@@ -17,7 +17,11 @@ FROM base as build
 
 # Install packages needed to build node modules
 RUN apt-get update -qq && \
-    apt-get install -y python-is-python3 pkg-config build-essential ffmpeg
+    apt-get install -y python-is-python3 pkg-config build-essential
+
+# Install ffmpeg
+RUN sudo apt install ffmpeg -y
+RUN ffmpeg --version
 
 # Install node modules
 COPY --link package-lock.json package.json ./
