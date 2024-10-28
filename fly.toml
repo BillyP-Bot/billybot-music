@@ -2,7 +2,6 @@ app = 'dj-billyp'
 primary_region = 'bos'
 
 [build]
-  builder = "heroku/builder:22"
 
 [http_service]
   internal_port = 8080
