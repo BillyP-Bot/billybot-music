@@ -21,7 +21,6 @@ RUN apt-get update -qq && \
 
 # Install ffmpeg
 RUN apt install ffmpeg -y
-RUN ffmpeg --version
 
 # Install node modules
 COPY --link package-lock.json package.json ./
