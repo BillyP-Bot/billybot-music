@@ -15,8 +15,8 @@ export interface ISlashCommand {
 	default_member_permissions?: Permissions;
 	default_permission?: boolean;
 	nsfw?: boolean;
-	handler: (int: ChatInputCommandInteraction) => Promise<any>;
-	reactHandler?: (react: MessageReaction, sender_id: string) => Promise<any>;
+	handler: (int: ChatInputCommandInteraction) => Promise<unknown>;
+	reactHandler?: (react: MessageReaction, sender_id: string) => Promise<unknown>;
 }
 
 // use these instead of minValue, maxValue, etc.

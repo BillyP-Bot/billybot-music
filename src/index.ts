@@ -1,17 +1,15 @@
-import { Client, Events, GatewayIntentBits, TextChannel } from "discord.js";
+import { Client, Events, GatewayIntentBits } from "discord.js";
+import DisTubeClient from "distube";
+import * as fs from "fs";
 
-import { clearVideoQueue, commandsLookup, initDisTubeClient } from "@commands";
-import {
-	config,
-	Embed,
-	logError,
-	registerSlashCommands,
-	sendLegacyCommandDeprecationNotice
-} from "@helpers";
+import { SoundCloudPlugin } from "@distube/soundcloud";
+import { SpotifyPlugin } from "@distube/spotify";
+import { YouTubePlugin } from "@distube/youtube";
 
-process.on("unhandledRejection", (error) => {
-	logError(error);
-});
+import { createCommands, registerCommands } from "./commands";
+import { Config } from "./config";
+import { createDistTubeEventHandlers } from "./distube";
+import { Embed } from "./embed";
 
 const client = new Client({
 	intents: [
@@ -22,28 +20,38 @@ const client = new Client({
 	]
 });
 
-initDisTubeClient(client);
+const distubeClient = new DisTubeClient(client, {
+	nsfw: true,
+	plugins: [
+		new SoundCloudPlugin(),
+		new SpotifyPlugin(),
+		new YouTubePlugin({ cookies: JSON.parse(fs.readFileSync("cookies.json").toString()) })
+	]
+});
+
+const { commands, commandsLookup } = createCommands(distubeClient);
 
 client.once(Events.ClientReady, async () => {
 	try {
-		await registerSlashCommands(client);
-		console.log(`Logged in as ${client.user.tag}!`);
+		createDistTubeEventHandlers(distubeClient);
+		await registerCommands(client, commands);
+		console.log(`Logged in as ${client.user.tag} in ${Config.IS_PROD ? "production" : "development"} mode!`);
 	} catch (error) {
-		logError(error);
+		console.error(error);
 	}
 });
 
-client.on(Events.InteractionCreate, async (int) => {
+client.on(Events.InteractionCreate, async int => {
 	try {
-		if (int.channel.name.includes("test") && config.IS_PROD) return;
-		if (!int.channel.name.includes("test") && !config.IS_PROD) return;
-		if (int.isChatInputCommand()) {
-			const command = commandsLookup[int.commandName];
-			if (command) return await command.handler(int);
-			else throw "Command not supported yet! Check back soon.";
-		}
+		if (int.channel.name.includes("test") && Config.IS_PROD) return;
+		if (!int.channel.name.includes("test") && !Config.IS_PROD) return;
+		if (!int.isChatInputCommand()) return;
+
+		const command = commandsLookup[int.commandName];
+		if (!command?.handler) throw "Command not supported yet! Check back soon.";
+		await command.handler(int);
 	} catch (error) {
-		logError(error);
+		console.error(error);
 		if (!int.isRepliable()) return;
 		const embed = { embeds: [Embed.error(error)] };
 		if (int.deferred || int.replied) await int.editReply(embed);
@@ -51,28 +59,6 @@ client.on(Events.InteractionCreate, async (int) => {
 	}
 });
 
-client.on(Events.MessageCreate, async (msg) => {
-	try {
-		if (msg.author.bot) return;
-		const channel = msg.channel as TextChannel;
-		if (channel.name?.includes("test") && config.IS_PROD) return;
-		if (channel.name && !channel.name?.includes("test") && !config.IS_PROD) return;
-		if (msg.content[0] === "!") return await sendLegacyCommandDeprecationNotice(msg);
-	} catch (error) {
-		logError(error);
-		await msg.channel.send({ embeds: [Embed.error(error)] });
-	}
-});
-
-client.on(Events.VoiceStateUpdate, (oldState) => {
-	try {
-		if (oldState.member.id === client.user.id && oldState.channelId)
-			clearVideoQueue(oldState.guild.id);
-	} catch (error) {
-		logError(error);
-	}
-});
-
-client.login(config.BOT_TOKEN).catch((error) => {
-	logError(error);
+client.login(Config.BOT_TOKEN).catch(error => {
+	console.error(error);
 });

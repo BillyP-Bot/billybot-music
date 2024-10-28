@@ -14,12 +14,7 @@
     "emitDecoratorMetadata": true,
     "skipLibCheck": true,
     "paths": {
-      "*": ["node_modules/*"],
-      "@commands": ["src/commands"],
-      "@helpers": ["src/helpers"],
-      "@reactions": ["src/reactions"],
-      "@types": ["src/types"],
-      "@enums": ["src/types/enums"]
+      "*": ["node_modules/*"]
     }
   },
   "include": ["src/**/*"]

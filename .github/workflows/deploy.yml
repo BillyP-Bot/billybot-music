@@ -1,4 +1,4 @@
-name: Fly.io Deploy
+name: deploy
 
 on:
   push:
@@ -17,15 +17,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
-      - name: Use Node.js 18
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: 18.x
+          node-version: 20.x
 
-      - run: npm install
+      - run: npm i --frozen-lockfile
       - run: npm run lint
       - run: npm run build
 
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl deploy --remote-only --detach
+      - run: flyctl deploy --remote-only --detach --no-cache --config fly.toml

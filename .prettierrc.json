@@ -1,19 +1,25 @@
 {
-  "endOfLine": "crlf",
-  "printWidth": 100,
+  "endOfLine": "lf",
+  "printWidth": 120,
   "tabWidth": 4,
   "trailingComma": "none",
   "useTabs": true,
   "singleQuote": false,
   "bracketSpacing": true,
   "semi": true,
-  "arrowParens": "always",
+  "arrowParens": "avoid",
   "overrides": [
     {
-      "files": ["*.json", "*.yml"],
+      "files": ["*.json", "*.yml", "*.yaml", "*.toml"],
       "options": {
         "tabWidth": 2,
         "useTabs": false
+      }
+    },
+    {
+      "files": ["*.cmd", "*.bat"],
+      "options": {
+        "endOfLine": "crlf"
       }
     }
   ]
