@@ -20,7 +20,7 @@ RUN apt-get update -qq && \
     apt-get install -y python-is-python3 pkg-config build-essential
 
 # Install ffmpeg
-RUN sudo apt install ffmpeg -y
+RUN apt install ffmpeg -y
 RUN ffmpeg --version
 
 # Install node modules
