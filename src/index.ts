@@ -23,9 +23,9 @@ const client = new Client({
 const distubeClient = new DisTubeClient(client, {
 	nsfw: true,
 	plugins: [
+		new YouTubePlugin({ cookies: JSON.parse(fs.readFileSync("cookies.json").toString()) }),
 		new SoundCloudPlugin(),
-		new SpotifyPlugin(),
-		new YouTubePlugin({ cookies: JSON.parse(fs.readFileSync("cookies.json").toString()) })
+		new SpotifyPlugin()
 	]
 });
 
@@ -53,7 +53,9 @@ client.on(Events.InteractionCreate, async int => {
 	} catch (error) {
 		console.error(error);
 		if (!int.isRepliable()) return;
-		const embed = { embeds: [Embed.error(error)] };
+		if (!("message" in error)) return;
+		const { message } = error;
+		const embed = { embeds: [Embed.error(message)] };
 		if (int.deferred || int.replied) await int.editReply(embed);
 		else await int.reply(embed);
 	}
