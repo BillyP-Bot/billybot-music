@@ -38,6 +38,10 @@ RUN npm prune --omit=dev
 # Final stage for app image
 FROM base
 
+# Install ffmpeg on app image
+RUN apt-get update -qq && \
+    apt-get install -y ffmpeg
+
 # Copy built application
 COPY --from=build /app /app
 
