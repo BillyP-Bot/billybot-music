@@ -1,6 +1,5 @@
 import { Client, Events, GatewayIntentBits } from "discord.js";
 import DisTubeClient from "distube";
-import * as fs from "fs";
 
 import { SoundCloudPlugin } from "@distube/soundcloud";
 import { SpotifyPlugin } from "@distube/spotify";
@@ -22,11 +21,7 @@ const client = new Client({
 
 const distubeClient = new DisTubeClient(client, {
 	nsfw: true,
-	plugins: [
-		new YouTubePlugin({ cookies: JSON.parse(fs.readFileSync("cookies.json").toString()) }),
-		new SoundCloudPlugin(),
-		new SpotifyPlugin()
-	]
+	plugins: [new YouTubePlugin(), new SoundCloudPlugin(), new SpotifyPlugin()]
 });
 
 const { commands, commandsLookup } = createCommands(distubeClient);
