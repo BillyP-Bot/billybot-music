@@ -67,7 +67,7 @@ class Musica(commands.Cog):
             return
 
         if len(audiocontroller.playlist.playque) < 1 and current_guild.voice_client.is_playing() == False:
-            await ctx.send("No hay canciones encoladas :peach:!")
+            await ctx.send("No songs queued!")
             return
 
         if audiocontroller.playlist.loop == False:
@@ -90,11 +90,11 @@ class Musica(commands.Cog):
             await ctx.send(config.NO_GUILD_MESSAGE)
             return
         if current_guild.voice_client is None or not current_guild.voice_client.is_playing():
-            await ctx.send("La lista esta vacia pibe :x:")
+            await ctx.send("The queue is empty :x:")
             return
 
         audiocontroller.playlist.shuffle()
-        await ctx.send("Canciones mezcladas rey :twisted_rightwards_arrows:")
+        await ctx.send("Songs shuffled :twisted_rightwards_arrows:")
 
         for song in list(audiocontroller.playlist.playque)[:config.MAX_SONG_PRELOAD]:
             asyncio.ensure_future(audiocontroller.preload(song))
@@ -112,7 +112,7 @@ class Musica(commands.Cog):
         if current_guild.voice_client is None or not current_guild.voice_client.is_playing():
             return
         current_guild.voice_client.pause()
-        await ctx.send("Musiquita pausada :pause_button:")
+        await ctx.send("Music paused :pause_button:")
 
     @commands.command(name='queue', description=config.HELP_QUEUE_LONG, help=config.HELP_QUEUE_SHORT,
                       aliases=['playlist', 'q'])
@@ -126,7 +126,7 @@ class Musica(commands.Cog):
             await ctx.send(config.NO_GUILD_MESSAGE)
             return
         if current_guild.voice_client is None or not current_guild.voice_client.is_playing():
-            await ctx.send("No hay canciones en cola pibe :x:")
+            await ctx.send("No songs in queue :x:")
             return
 
         playlist = utils.guild_to_audiocontroller[current_guild].playlist
@@ -161,32 +161,32 @@ class Musica(commands.Cog):
             await ctx.send(config.NO_GUILD_MESSAGE)
             return
         await utils.guild_to_audiocontroller[current_guild].stop_player()
-        await ctx.send("Corte toda la musiquita")
+        await ctx.send("Stopped all music :stop_button:")
 
     @commands.command(name='move', description=config.HELP_MOVE_LONG, help=config.HELP_MOVE_SHORT, aliases=['mv'])
     async def _move(self, ctx, *args):
         if len(args) != 2:
-            ctx.send("Cantidad de argumentos equivocada :grimacing:")
+            ctx.send("Incorrect number of arguments :grimacing:")
             return
 
         try:
             oldindex, newindex = map(int, args)
         except ValueError:
-            ctx.send("Argumento equivocado :grimacing:")
+            ctx.send("Wrong argument :grimacing:")
             return
 
         current_guild = utils.get_guild(self.bot, ctx.message)
         audiocontroller = utils.guild_to_audiocontroller[current_guild]
         if current_guild.voice_client is None or (
                 not current_guild.voice_client.is_paused() and not current_guild.voice_client.is_playing()):
-            await ctx.send("Che, la lista de canciones esta vacia :x:")
+            await ctx.send("The song list is empty :x:")
             return
         try:
             audiocontroller.playlist.move(oldindex - 1, newindex - 1)
         except IndexError:
-            await ctx.send("Posicion Equivocada :grimacing:")
+            await ctx.send("Incorrect position :grimacing:")
             return
-        await ctx.send("Movida correctamente rey")
+        await ctx.send("Moved successfully")
 
     @commands.command(name='skip', description=config.HELP_SKIP_LONG, help=config.HELP_SKIP_SHORT, aliases=['s'])
     async def _skip(self, ctx):
@@ -206,10 +206,10 @@ class Musica(commands.Cog):
             return
         if current_guild.voice_client is None or (
                 not current_guild.voice_client.is_paused() and not current_guild.voice_client.is_playing()):
-            await ctx.send("No hay nada que skippear :x:")
+            await ctx.send("There's nothing to skip :x:")
             return
         current_guild.voice_client.stop()
-        await ctx.send("Salteando cancion actual :fast_forward:")
+        await ctx.send("Skipping the current song :fast_forward:")
 
     @commands.command(name='clear', description=config.HELP_CLEAR_LONG, help=config.HELP_CLEAR_SHORT, aliases=['cl'])
     async def _clear(self, ctx):
@@ -222,7 +222,7 @@ class Musica(commands.Cog):
         audiocontroller.clear_queue()
         current_guild.voice_client.stop()
         audiocontroller.playlist.loop = False
-        await ctx.send("Lista vaciada rey :no_entry_sign:")
+        await ctx.send("Queue cleared :no_entry_sign:")
 
     @commands.command(name='prev', description=config.HELP_PREV_LONG, help=config.HELP_PREV_SHORT, aliases=['back'])
     async def _prev(self, ctx):
@@ -241,7 +241,7 @@ class Musica(commands.Cog):
             await ctx.send(config.NO_GUILD_MESSAGE)
             return
         await utils.guild_to_audiocontroller[current_guild].prev_song()
-        await ctx.send("Tocando cancion anterior :track_previous:")
+        await ctx.send("Playing the previous song :track_previous:")
 
     @commands.command(name='resume', description=config.HELP_RESUME_LONG, help=config.HELP_RESUME_SHORT)
     async def _resume(self, ctx):
@@ -254,7 +254,7 @@ class Musica(commands.Cog):
             await ctx.send(config.NO_GUILD_MESSAGE)
             return
         current_guild.voice_client.resume()
-        await ctx.send("Resumiendo la playlist :arrow_forward:")
+        await ctx.send("Resuming the playlist :arrow_forward:")
 
     @commands.command(name='songinfo', description=config.HELP_SONGINFO_LONG, help=config.HELP_SONGINFO_SHORT,
                       aliases=["np"])
@@ -294,7 +294,7 @@ class Musica(commands.Cog):
             return
 
         if len(args) == 0:
-            await ctx.send("Volumen actual: {}% :speaker:".format(utils.guild_to_audiocontroller[ctx.guild]._volume))
+            await ctx.send("Setting volume to: {}% :speaker:".format(utils.guild_to_audiocontroller[ctx.guild]._volume))
             return
 
         try:
@@ -305,12 +305,12 @@ class Musica(commands.Cog):
             current_guild = utils.get_guild(self.bot, ctx.message)
 
             if utils.guild_to_audiocontroller[current_guild]._volume >= volume:
-                await ctx.send('Poniendote el volumen al {}% :sound:'.format(str(volume)))
+                await ctx.send('Setting volume to {}% :sound:'.format(str(volume)))
             else:
-                await ctx.send('Poniendote el volumen al {}% :loud_sound:'.format(str(volume)))
+                await ctx.send('Setting volume to {}% :loud_sound:'.format(str(volume)))
             utils.guild_to_audiocontroller[current_guild].volume = volume
         except:
-            await ctx.send("El volumen tiene que ser de 0 a 200 capo")
+            await ctx.send("Volume must be between 0 and 200")
 
 def setup(bot):
     bot.add_cog(Musica(bot))

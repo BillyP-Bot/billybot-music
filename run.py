@@ -24,7 +24,7 @@ if __name__ == '__main__':
     config.COOKIE_PATH = config.ABSOLUTE_PATH + config.COOKIE_PATH
 
     if config.BOT_TOKEN == "":
-        print("Error: No bot token!")
+        print("Error: BOT_TOKEN not set in .env file")
         exit
 
     for extension in initial_extensions:
