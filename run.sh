@@ -1,3 +1,3 @@
 #!/bin/bash
-pip install -r ./config/requirements.txt
+source myenv/bin/activate
 python run.py
