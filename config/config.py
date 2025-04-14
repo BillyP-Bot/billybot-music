@@ -16,7 +16,7 @@ SUPPORTED_EXTENSIONS = ('.webm', '.mp4', '.mp3', '.avi', '.wav', '.m4v', '.ogg',
 MAX_SONG_PRELOAD = 5  #maximum of 25
 
 COOKIE_PATH = "/config/cookies/cookies.txt"
-COOKIE_IGNORE_PATH = "/config/cookies/cookies_ignore.txt"
+COOKIE_INIT_PATH = "/config/cookies/cookies_init.txt"
 
 GLOBAL_DISABLE_AUTOJOIN_VC = False
 

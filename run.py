@@ -21,15 +21,18 @@ bot = commands.Bot(command_prefix=config.BOT_PREFIX,
 
 if __name__ == '__main__':
     config.ABSOLUTE_PATH = os.path.dirname(os.path.abspath(__file__))
+    config.COOKIE_PATH = config.ABSOLUTE_PATH + config.COOKIE_PATH
+    
+    # Copy cookies_init.txt to cookies.txt if cookies.txt doesn't exist
+    if not os.path.exists(config.COOKIE_PATH):
+        shutil.copyfile(config.ABSOLUTE_PATH + config.COOKIE_INIT_PATH, config.COOKIE_PATH)
 
-    cookie_path = config.ABSOLUTE_PATH + config.COOKIE_PATH
-    cookie_ignore_path = config.ABSOLUTE_PATH + config.COOKIE_IGNORE_PATH
+    SETTINGS_INIT_PATH = config.ABSOLUTE_PATH + "/musicbot/generated/settings_init.json"
+    SETTINGS_PATH = config.ABSOLUTE_PATH + "/musicbot/generated/settings.json"
 
-     # Copy cookies.txt to cookies_ignore.txt if it doesn't exist
-    if not os.path.exists(cookie_ignore_path):
-        shutil.copyfile(cookie_path, cookie_ignore_path)
-
-    config.COOKIE_PATH = cookie_ignore_path
+    # Copy settings_init.json to settings.json if settings.json doesn't exist
+    if not os.path.exists(SETTINGS_PATH):
+        shutil.copyfile(SETTINGS_INIT_PATH, SETTINGS_PATH)
 
     if config.BOT_TOKEN == "":
         print("Error: BOT_TOKEN not set in .env file")
