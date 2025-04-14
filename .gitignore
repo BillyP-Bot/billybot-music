@@ -1,5 +1,6 @@
 *.pyc
 .env
 myenv
-/config/cookies/cookies_ignore.txt
 /run.sh
+/config/cookies/cookies.txt
+/musicbot/generated/settings.json
