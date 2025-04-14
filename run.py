@@ -1,4 +1,5 @@
 import os
+import shutil
 
 import discord
 from discord.ext import commands
@@ -19,9 +20,16 @@ bot = commands.Bot(command_prefix=config.BOT_PREFIX,
 
 
 if __name__ == '__main__':
-
     config.ABSOLUTE_PATH = os.path.dirname(os.path.abspath(__file__))
-    config.COOKIE_PATH = config.ABSOLUTE_PATH + config.COOKIE_PATH
+
+    cookie_path = config.ABSOLUTE_PATH + config.COOKIE_PATH
+    cookie_ignore_path = config.ABSOLUTE_PATH + config.COOKIE_IGNORE_PATH
+
+     # Copy cookies.txt to cookies_ignore.txt if it doesn't exist
+    if not os.path.exists(cookie_ignore_path):
+        shutil.copyfile(cookie_path, cookie_ignore_path)
+
+    config.COOKIE_PATH = cookie_ignore_path
 
     if config.BOT_TOKEN == "":
         print("Error: BOT_TOKEN not set in .env file")
