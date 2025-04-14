@@ -2,3 +2,4 @@
 .env
 myenv
 /config/cookies/cookies_ignore.txt
+/run.sh
