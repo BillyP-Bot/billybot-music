@@ -13,21 +13,21 @@ jobs:
     - uses: actions/checkout@v2
     
     - name: Create app directory if it doesn't exist
-      run: mkdir -p $HOME/apps/billybot-music
+      run: mkdir -p /home/pi/apps/billybot-music
 
     - name: Copy project files to app directory
-      run: cp -rf ./{*,.[^.]*} $HOME/apps/billybot-music/ 2>/dev/null || true
+      run: cp -rf ./{*,.[^.]*} /home/pi/apps/billybot-music/ 2>/dev/null || true
 
     - name: Set Python version
-      working-directory: $HOME/apps/billybot-music
+      working-directory: /home/pi/apps/billybot-music
       run: pyenv local 3.10.2
 
     - name: Activate virtual environment
-      working-directory: $HOME/apps/billybot-music
+      working-directory: /home/pi/apps/billybot-music
       run: source myenv/bin/activate
 
     - name: Install dependencies
-      working-directory: $HOME/apps/billybot-music
+      working-directory: /home/pi/apps/billybot-music
       run: pip install -r config/requirements.txt
 
     - name: Kill existing tmux session
