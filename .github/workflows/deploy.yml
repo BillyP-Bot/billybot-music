@@ -26,9 +26,25 @@ jobs:
         source myenv/bin/activate
         pip install -r config/requirements.txt
 
-    - name: Launch app
+    - name: Install or update systemd service
       run: |
-        cd $APP_DIR
-        tmux kill-session -t dj 2>/dev/null || true
-        tmux new-session -d -s dj 'python run.py'
-        tmux has-session -t dj
+        cat > /tmp/billybot-music.service << EOF
+        [Unit]
+        Description=billybot-music
+        After=network.target
+
+        [Service]
+        Type=simple
+        User=pi
+        WorkingDirectory=$APP_DIR
+        ExecStart=python run.py
+        Restart=on-failure
+
+        [Install]
+        WantedBy=multi-user.target
+        EOF
+        sudo mv /tmp/billybot-music.service /etc/systemd/system/
+        sudo systemctl daemon-reload
+        sudo systemctl enable billybot-music.service
+        sudo systemctl restart billybot-music.service
+        sudo systemctl status billybot-music.service
