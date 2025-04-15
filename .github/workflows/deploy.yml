@@ -21,14 +21,14 @@ jobs:
       run: |
         rm -rf $APP_DIR
         mkdir $APP_DIR
-        cp -rf ./{*,.[^.]*} $APP_DIR/ 2>/dev/null || true
+        cp -r ./{*,.[^.]*} $APP_DIR/
 
     - name: Configure app environment
       run: |
         cd $APP_DIR
 
         # Copy environment files to app directory
-        cp -rf $ENV_DIR/{*,.[^.]*} $APP_DIR/ 2>/dev/null || true
+        cp -r $ENV_DIR/{*,.[^.]*} $APP_DIR/
         source venv/bin/activate
         
         # Check if dependencies file has changed or does not exist
