@@ -10,8 +10,8 @@ jobs:
     environment: Raspberry Pi 5
     env:
       APP_NAME: billybot-music
-      HOME_DIR: /home/pi
       APP_DIR: /home/pi/apps/billybot-music
+      ENV_DIR: /home/pi/env
       REQ_FILE: config/requirements.txt
 
     steps:
@@ -26,12 +26,14 @@ jobs:
     - name: Configure app environment
       run: |
         cd $APP_DIR
-        cp -rf $HOME_DIR/env/$APP_NAME/{*,.[^.]*} $APP_DIR/ 2>/dev/null || true
+
+        # Copy environment files to app directory
+        cp -rf $ENV_DIR/$APP_NAME/{*,.[^.]*} $APP_DIR/ 2>/dev/null || true
         source venv/bin/activate
         
         # Check if requirements file has changed
         CURRENT_HASH=$(md5sum $REQ_FILE | awk '{print $1}')
-        HASH_FILE="$APP_DIR/.requirements_hash"
+        HASH_FILE="$ENV_DIR/.requirements_hash"
         
         if [ ! -f "$HASH_FILE" ] || [ "$(cat $HASH_FILE)" != "$CURRENT_HASH" ]; then
           echo "$REQ_FILE has changed or does not exist in app directory. Installing dependencies..."
