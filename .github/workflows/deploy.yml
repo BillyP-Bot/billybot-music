@@ -12,16 +12,26 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     
-    - name: Copy project files to app directory
-      run: |
-        mkdir -p $HOME/apps/billybot-music
-        cp -rf ./{*,.[^.]*} $HOME/apps/billybot-music/ 2>/dev/null || true
+    - name: Create app directory if it doesn't exist
+      run: mkdir -p $HOME/apps/billybot-music
 
-    - name: Configure environment and start app
-      run: |
-        cd $HOME/apps/billybot-music
-        pyenv local 3.10.2
-        source myenv/bin/activate
-        pip install -r config/requirements.txt
-        tmux kill-session -t dj 2>/dev/null || true
-        tmux new-session -d -s dj 'python run.py'
+    - name: Copy project files to app directory
+      run: cp -rf ./{*,.[^.]*} $HOME/apps/billybot-music/ 2>/dev/null || true
+
+    - name: Set Python version
+      working-directory: $HOME/apps/billybot-music
+      run: pyenv local 3.10.2
+
+    - name: Activate virtual environment
+      working-directory: $HOME/apps/billybot-music
+      run: source myenv/bin/activate
+
+    - name: Install dependencies
+      working-directory: $HOME/apps/billybot-music
+      run: pip install -r config/requirements.txt
+
+    - name: Kill existing tmux session
+      run: tmux kill-session -t dj 2>/dev/null || true
+
+    - name: Launch app in new tmux session
+      run: tmux new-session -d -s dj 'python run.py'
