@@ -7,15 +7,12 @@ on:
 jobs:
   deploy:
     runs-on: self-hosted
-    environment: raspberry pi 5
+    environment: Raspberry Pi 5
     env:
       APP_DIR: /home/pi/apps/billybot-music
 
     steps:
     - uses: actions/checkout@v2
-    
-    - name: Create app directory if it doesn't exist
-      run: 
 
     - name: Copy project files to app directory
       run: |
@@ -29,7 +26,7 @@ jobs:
         source myenv/bin/activate
         pip install -r config/requirements.txt
 
-    - name: Launch app in 'dj' tmux session
+    - name: Launch app
       run: |
         cd $APP_DIR
         tmux kill-session -t dj 2>/dev/null || true
