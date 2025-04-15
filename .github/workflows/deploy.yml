@@ -43,9 +43,9 @@ jobs:
 
     - name: Install/update systemd service to run app
       run: |
-        cat > /tmp/billybot-music.service << EOF
+        cat > /tmp/$APP_NAME.service << EOF
         [Unit]
-        Description=billybot-music
+        Description=$APP_NAME
         After=network.target
 
         [Service]
@@ -58,8 +58,8 @@ jobs:
         [Install]
         WantedBy=multi-user.target
         EOF
-        sudo mv /tmp/billybot-music.service /etc/systemd/system/
+        sudo mv /tmp/$APP_NAME.service /etc/systemd/system/
         sudo systemctl daemon-reload
-        sudo systemctl enable billybot-music.service
-        sudo systemctl restart billybot-music.service
-        sudo systemctl status billybot-music.service
+        sudo systemctl enable $APP_NAME.service
+        sudo systemctl restart $APP_NAME.service
+        sudo systemctl status $APP_NAME.service
