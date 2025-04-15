@@ -12,7 +12,7 @@ jobs:
       APP_NAME: billybot-music
       APP_DIR: /home/pi/apps/billybot-music
       ENV_DIR: /home/pi/env/billybot-music
-      REQ_FILE: config/requirements.txt
+      DEP_FILE: config/requirements.txt
 
     steps:
     - uses: actions/checkout@v2
@@ -31,16 +31,16 @@ jobs:
         cp -rf $ENV_DIR/{*,.[^.]*} $APP_DIR/ 2>/dev/null || true
         source venv/bin/activate
         
-        # Check if requirements file has changed or does not exist
-        CURRENT_HASH=$(md5sum $REQ_FILE | awk '{print $1}')
+        # Check if dependencies file has changed or does not exist
+        CURRENT_HASH=$(md5sum $DEP_FILE | awk '{print $1}')
         HASH_FILE="$ENV_DIR/.requirements_hash"
         
         if [ ! -f "$HASH_FILE" ] || [ "$(cat $HASH_FILE)" != "$CURRENT_HASH" ]; then
-          echo "$REQ_FILE has changed or does not exist in app directory. Installing dependencies..."
-          pip install -r $REQ_FILE
+          echo "$DEP_FILE has changed or does not exist in app directory. Installing dependencies..."
+          pip install -r $DEP_FILE
           echo "$CURRENT_HASH" > "$HASH_FILE"
         else
-          echo "$REQ_FILE has not changed. Skipping dependency installation."
+          echo "$DEP_FILE has not changed. Skipping dependency installation."
         fi
 
     - name: Install/update systemd service to run app
