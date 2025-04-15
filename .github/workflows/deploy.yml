@@ -29,11 +29,11 @@ jobs:
         HASH_FILE="$APP_DIR/.requirements_hash"
         
         if [ ! -f "$HASH_FILE" ] || [ "$(cat $HASH_FILE)" != "$CURRENT_HASH" ]; then
-          echo "Requirements have changed. Installing dependencies..."
+          echo "config/requirements.txt has changed or does not exist. Installing dependencies..."
           pip install -r config/requirements.txt
           echo "$CURRENT_HASH" > "$HASH_FILE"
         else
-          echo "Requirements unchanged. Skipping pip install."
+          echo "config/requirements.txt has not changed. Skipping dependency installation."
         fi
 
     - name: Install or update systemd service to run app
