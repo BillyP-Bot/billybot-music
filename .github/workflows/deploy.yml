@@ -37,7 +37,7 @@ jobs:
         Type=simple
         User=pi
         WorkingDirectory=$APP_DIR
-        ExecStart=python run.py
+        ExecStart=$APP_DIR/myenv/bin/python $APP_DIR/run.py
         Restart=on-failure
 
         [Install]
