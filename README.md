@@ -5,7 +5,6 @@ A Discord music bot written in Python with support for Youtube, SoundCloud, Spot
 * The Wiki may have the answer you are looking for https://github.com/Raptor123471/DingoLingo/wiki
 * Known problems are listed in Issues. If you are interested in this project feel free to submit an Issue.
 
-
 <h3>What's Coming?</h1>
 
   - See TODO in Projects tab
@@ -58,7 +57,6 @@ Custom Cookies:
 ### Music
 
 After the bot has joined your server, use ```$help``` to display help and command information.
-
 
 ```
 $p [link/video title/key words/playlist-link/soundcloud link/spotify link/bandcamp link/twitter link]
@@ -140,7 +138,6 @@ $stop / $st
 ```
 * Stops the current song and clears the playqueue.
 
-
 ### General
 
 ```
@@ -175,7 +172,6 @@ $history
 ```
 * Shows you the titles of the X last played songs. Configurable in config.config.py
 
-
 ### Utility
 
 ```
@@ -202,7 +198,6 @@ This program is free software: you can redistribute it and/or modify
 it under the terms of the [GNU General Public License](LICENSE.txt) as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
-
 
 ## Acknowledgments
 
