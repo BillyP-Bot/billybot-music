@@ -9,7 +9,9 @@ jobs:
     runs-on: self-hosted
     environment: Raspberry Pi 5
     env:
-      APP_DIR: /home/pi/apps/billybot-music
+      APP_NAME: billybot-music
+      HOME_DIR: /home/pi
+      APP_DIR: ${{ env.HOME_DIR }}/apps/${{ env.APP_NAME }}
       REQ_FILE: config/requirements.txt
 
     steps:
@@ -17,12 +19,14 @@ jobs:
 
     - name: Copy project files to app directory
       run: |
-        mkdir -p $APP_DIR
+        rm -rf $APP_DIR
+        mkdir $APP_DIR
         cp -rf ./{*,.[^.]*} $APP_DIR/ 2>/dev/null || true
 
     - name: Configure app environment
       run: |
         cd $APP_DIR
+        cp -rf $HOME_DIR/env/$APP_NAME/{*,.[^.]*} $APP_DIR/ 2>/dev/null || true
         source venv/bin/activate
         
         # Check if requirements file has changed
