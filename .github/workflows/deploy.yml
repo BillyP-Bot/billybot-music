@@ -5,8 +5,9 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  deploy:
     runs-on: self-hosted
+    environment: raspberry pi 5
 
     strategy:
       matrix:
@@ -14,4 +15,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - run: echo 'hello world!' > ~/runner.log
+
+    - run: |
+        mkdir -p ~/apps/billybot-music/
+        cp -rf ./{*,.[^.]*} ~/apps/billybot-music/ 2>/dev/null || true
