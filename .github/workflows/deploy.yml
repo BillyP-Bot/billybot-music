@@ -9,13 +9,19 @@ jobs:
     runs-on: self-hosted
     environment: raspberry pi 5
 
-    strategy:
-      matrix:
-        node-version: [20.x]
-
     steps:
     - uses: actions/checkout@v2
-
-    - run: |
-        mkdir -p ~/apps/billybot-music/
+    
+    - name: Copy project files to app directory
+      run: |
+        mkdir -p ~/apps/billybot-music
         cp -rf ./{*,.[^.]*} ~/apps/billybot-music/ 2>/dev/null || true
+
+    - name: Configure environment and start app
+      working-directory: ~/apps/billybot-music
+      run: |
+        pyenv local 3.10.2
+        source myenv/bin/activate
+        pip install -r config/requirements.txt
+        tmux kill-session -t dj 2>/dev/null || true
+        tmux new-session -d -s dj 'python run.py'
