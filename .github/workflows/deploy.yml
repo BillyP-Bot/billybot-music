@@ -22,8 +22,7 @@ jobs:
     - name: Configure app environment
       run: |
         cd $APP_DIR
-        pyenv local 3.10.2
-        source myenv/bin/activate
+        source venv/bin/activate
         pip install -r config/requirements.txt
 
     - name: Install or update systemd service
