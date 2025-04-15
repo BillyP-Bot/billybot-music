@@ -11,7 +11,7 @@ jobs:
     env:
       APP_NAME: billybot-music
       APP_DIR: /home/pi/apps/billybot-music
-      ENV_DIR: /home/pi/env
+      ENV_DIR: /home/pi/env/billybot-music
       REQ_FILE: config/requirements.txt
 
     steps:
@@ -28,7 +28,7 @@ jobs:
         cd $APP_DIR
 
         # Copy environment files to app directory
-        cp -rf $ENV_DIR/$APP_NAME/{*,.[^.]*} $APP_DIR/ 2>/dev/null || true
+        cp -rf $ENV_DIR/{*,.[^.]*} $APP_DIR/ 2>/dev/null || true
         source venv/bin/activate
         
         # Check if requirements file has changed or does not exist
