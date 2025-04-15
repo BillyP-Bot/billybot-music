@@ -18,7 +18,6 @@ jobs:
         cp -rf ./{*,.[^.]*} $HOME/apps/billybot-music/ 2>/dev/null || true
 
     - name: Configure environment and start app
-      working-directory: $HOME/apps/billybot-music
       run: |
         cd $HOME/apps/billybot-music
         pyenv local 3.10.2
