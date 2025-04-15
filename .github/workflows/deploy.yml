@@ -31,7 +31,7 @@ jobs:
         cp -rf $ENV_DIR/$APP_NAME/{*,.[^.]*} $APP_DIR/ 2>/dev/null || true
         source venv/bin/activate
         
-        # Check if requirements file has changed
+        # Check if requirements file has changed or does not exist
         CURRENT_HASH=$(md5sum $REQ_FILE | awk '{print $1}')
         HASH_FILE="$ENV_DIR/.requirements_hash"
         
