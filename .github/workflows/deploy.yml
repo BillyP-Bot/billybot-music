@@ -15,26 +15,23 @@ jobs:
     - uses: actions/checkout@v2
     
     - name: Create app directory if it doesn't exist
-      run: mkdir -p $APP_DIR
+      run: 
 
     - name: Copy project files to app directory
-      run: cp -rf ./{*,.[^.]*} $APP_DIR/ 2>/dev/null || true
+      run: |
+        mkdir -p $APP_DIR
+        cp -rf ./{*,.[^.]*} $APP_DIR/ 2>/dev/null || true
 
-    - name: Set Python version locally for app directory
-      working-directory: $APP_DIR
-      run: pyenv local 3.10.2
+    - name: Configure app environment
+      run: |
+        cd $APP_DIR
+        pyenv local 3.10.2
+        source myenv/bin/activate
+        pip install -r config/requirements.txt
 
-    - name: Activate Python virtual environment
-      working-directory: $APP_DIR
-      run: source myenv/bin/activate
-
-    - name: Install Python package dependencies
-      working-directory: $APP_DIR
-      run: pip install -r config/requirements.txt
-
-    - name: Kill existing tmux session
-      run: tmux kill-session -t dj 2>/dev/null || true
-
-    - name: Launch app in new tmux session
-      working-directory: $APP_DIR
-      run: tmux new-session -d -s dj 'python run.py'
+    - name: Launch app in 'dj' tmux session
+      run: |
+        cd $APP_DIR
+        tmux kill-session -t dj 2>/dev/null || true
+        tmux new-session -d -s dj 'python run.py'
+        tmux has-session -t dj
