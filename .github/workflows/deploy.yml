@@ -10,6 +10,7 @@ jobs:
     environment: Raspberry Pi 5
     env:
       APP_DIR: /home/pi/apps/billybot-music
+      REQ_FILE: config/requirements.txt
 
     steps:
     - uses: actions/checkout@v2
@@ -25,18 +26,18 @@ jobs:
         source venv/bin/activate
         
         # Check if requirements file has changed
-        CURRENT_HASH=$(md5sum config/requirements.txt | awk '{print $1}')
+        CURRENT_HASH=$(md5sum $REQ_FILE | awk '{print $1}')
         HASH_FILE="$APP_DIR/.requirements_hash"
         
         if [ ! -f "$HASH_FILE" ] || [ "$(cat $HASH_FILE)" != "$CURRENT_HASH" ]; then
-          echo "config/requirements.txt has changed or does not exist. Installing dependencies..."
-          pip install -r config/requirements.txt
+          echo "$REQ_FILE has changed or does not exist in app directory. Installing dependencies..."
+          pip install -r $REQ_FILE
           echo "$CURRENT_HASH" > "$HASH_FILE"
         else
-          echo "config/requirements.txt has not changed. Skipping dependency installation."
+          echo "$REQ_FILE has not changed. Skipping dependency installation."
         fi
 
-    - name: Install or update systemd service to run app
+    - name: Install/update systemd service to run app
       run: |
         cat > /tmp/billybot-music.service << EOF
         [Unit]
