@@ -20,6 +20,7 @@ jobs:
     - name: Configure environment and start app
       working-directory: $HOME/apps/billybot-music
       run: |
+        cd $HOME/apps/billybot-music
         pyenv local 3.10.2
         source myenv/bin/activate
         pip install -r config/requirements.txt
