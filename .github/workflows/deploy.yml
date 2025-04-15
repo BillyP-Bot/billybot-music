@@ -11,7 +11,7 @@ jobs:
     env:
       APP_NAME: billybot-music
       HOME_DIR: /home/pi
-      APP_DIR: ${{ env.HOME_DIR }}/apps/${{ env.APP_NAME }}
+      APP_DIR: /home/pi/apps/billybot-music
       REQ_FILE: config/requirements.txt
 
     steps:
