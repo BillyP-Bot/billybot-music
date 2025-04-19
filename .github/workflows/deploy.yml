@@ -29,7 +29,7 @@ jobs:
         cd $APP_DIR
 
         # Copy environment files to app directory
-        cp -r $ENV_DIR/{*,.[^.]*} ./
+        cp $ENV_DIR/.env $APP_DIR/.env
         
         # Check if dependencies file has changed or does not exist
         CURRENT_HASH=$(md5sum $DEP_FILE | awk '{print $1}')
