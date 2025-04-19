@@ -20,6 +20,8 @@ class Musica(commands.Cog):
     @discord.option('track', type=discord.SlashCommandOptionType.string)
     async def _play_song(self, ctx, track: str):
 
+        await ctx.respond(f'Searching for {track}...')
+
         current_guild = ctx.guild
         audiocontroller = utils.guild_to_audiocontroller[current_guild]
 
@@ -122,10 +124,10 @@ class Musica(commands.Cog):
             return
 
         if current_guild is None:
-            await ctx.send(config.NO_GUILD_MESSAGE)
+            await ctx.respond(config.NO_GUILD_MESSAGE)
             return
         if current_guild.voice_client is None or not current_guild.voice_client.is_playing():
-            await ctx.send("No songs in queue :x:")
+            await ctx.respond("No songs in queue :x:")
             return
 
         playlist = utils.guild_to_audiocontroller[current_guild].playlist
@@ -145,7 +147,7 @@ class Musica(commands.Cog):
                 embed.add_field(name="{}.".format(str(counter)), value="[{}]({})".format(
                     song.info.title, song.info.webpage_url), inline=False)
 
-        await ctx.send(embed=embed)
+        await ctx.respond(embed=embed)
 
     @discord.slash_command(name='stop', description=config.HELP_STOP_SHORT)
     async def _stop(self, ctx):
@@ -160,7 +162,7 @@ class Musica(commands.Cog):
             await ctx.send(config.NO_GUILD_MESSAGE)
             return
         await utils.guild_to_audiocontroller[current_guild].stop_player()
-        await ctx.send("Stopped all music :stop_button:")
+        await ctx.respond("Stopped all music :stop_button:")
 
     @commands.command(name='move', description=config.HELP_MOVE_LONG, help=config.HELP_MOVE_SHORT, aliases=['mv'])
     async def _move(self, ctx, *args):
@@ -201,14 +203,14 @@ class Musica(commands.Cog):
         audiocontroller.timer = utils.Timer(audiocontroller.timeout_handler)
 
         if current_guild is None:
-            await ctx.send(config.NO_GUILD_MESSAGE)
+            await ctx.respond(config.NO_GUILD_MESSAGE)
             return
         if current_guild.voice_client is None or (
                 not current_guild.voice_client.is_paused() and not current_guild.voice_client.is_playing()):
-            await ctx.send("There's nothing to skip :x:")
+            await ctx.respond("There's nothing to skip :x:")
             return
         current_guild.voice_client.stop()
-        await ctx.send("Skipping the current song :fast_forward:")
+        await ctx.respond("Skipping the current song :fast_forward:")
 
     @discord.slash_command(name='clear', description=config.HELP_CLEAR_SHORT)
     async def _clear(self, ctx):
@@ -221,7 +223,7 @@ class Musica(commands.Cog):
         audiocontroller.clear_queue()
         current_guild.voice_client.stop()
         audiocontroller.playlist.loop = False
-        await ctx.send("Queue cleared :no_entry_sign:")
+        await ctx.respond("Queue cleared :no_entry_sign:")
 
     @commands.command(name='prev', description=config.HELP_PREV_LONG, help=config.HELP_PREV_SHORT, aliases=['back'])
     async def _prev(self, ctx):
