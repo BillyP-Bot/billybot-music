@@ -20,7 +20,7 @@ class Musica(commands.Cog):
     @discord.option('track', type=discord.SlashCommandOptionType.string)
     async def _play_song(self, ctx, track: str):
 
-        await ctx.respond(f'Searching for {track}...')
+        await ctx.respond(f'Searching for `{track}`...')
 
         current_guild = ctx.guild
         audiocontroller = utils.guild_to_audiocontroller[current_guild]

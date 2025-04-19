@@ -6,7 +6,7 @@ The one and only DJ BillyP!
 
 ## Setup
 
-1. Install and use Python 3.10.2 (optionally via `venv` or [pyenv](https://github.com/pyenv/pyenv))
+1. Install Python (version [3.13.3](https://www.python.org/downloads/release/python-3133/) confirmed working)
 2. If running on Linux, install the following packages:
    - ffmpeg
    - libffi-dev

@@ -15,7 +15,7 @@ jobs:
       DEP_FILE: config/requirements.txt
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Copy project files to app directory
       run: |
@@ -27,8 +27,6 @@ jobs:
     - name: Configure app environment
       run: |
         cd $APP_DIR
-
-        # Copy environment files to app directory
         cp $ENV_DIR/.env $APP_DIR/.env
         
         # Check if dependencies file has changed or does not exist
