@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()
+ENVIRONMENT: str = os.getenv("ENVIRONMENT", "production")
 
 BOT_TOKEN: str = os.getenv("BOT_TOKEN", "")
 SPOTIFY_ID: str = "1310faf218d54033829ebe6364f4a5af"

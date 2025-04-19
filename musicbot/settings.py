@@ -18,7 +18,8 @@ class Settings():
         self.settings_template = {
             "id": 0,
             "default_nickname": "DJ BillyP",
-            "command_channel": None,
+            "command_channel": 975795297257136189 if config.ENVIRONMENT == "dev" else None,
+            "ignore_channel": 975795297257136189 if config.ENVIRONMENT == "production" else None,
             "start_voice_channel": None,
             "user_must_be_in_vc": True,
             "button_emote": "",
@@ -133,6 +134,7 @@ class Settings():
         switcher = {
             'default_nickname': lambda: self.default_nickname(setting, value, ctx),
             'command_channel': lambda: self.command_channel(setting, value, ctx),
+            'ignore_channel': lambda: self.command_channel(setting, value, ctx),
             'start_voice_channel': lambda: self.start_voice_channel(setting, value, ctx),
             'user_must_be_in_vc': lambda: self.user_must_be_in_vc(setting, value, ctx),
             'button_emote': lambda: self.button_emote(setting, value, ctx),

@@ -6,3 +6,4 @@ asyncio
 beautifulsoup4
 spotipy
 python-dotenv
+audioop-lts # needed for discord.py dependency to run on 13.3 - https://github.com/Rapptz/discord.py/issues/9742
