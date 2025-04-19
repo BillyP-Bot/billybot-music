@@ -16,11 +16,11 @@ class Musica(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='play', description=config.HELP_YT_LONG, help=config.HELP_YT_SHORT,
-                      aliases=['p', 'yt', 'pl'])
-    async def _play_song(self, ctx, *, track: str):
+    @discord.slash_command(name='p', description=config.HELP_YT_SHORT)
+    @discord.option('track', type=discord.SlashCommandOptionType.string)
+    async def _play_song(self, ctx, track: str):
 
-        current_guild = utils.get_guild(self.bot, ctx.message)
+        current_guild = ctx.guild
         audiocontroller = utils.guild_to_audiocontroller[current_guild]
 
         if (await utils.is_connected(ctx) == None):
@@ -114,10 +114,9 @@ class Musica(commands.Cog):
         current_guild.voice_client.pause()
         await ctx.send("Music paused :pause_button:")
 
-    @commands.command(name='queue', description=config.HELP_QUEUE_LONG, help=config.HELP_QUEUE_SHORT,
-                      aliases=['playlist', 'q'])
+    @discord.slash_command(name='queue', description=config.HELP_QUEUE_SHORT)
     async def _queue(self, ctx):
-        current_guild = utils.get_guild(self.bot, ctx.message)
+        current_guild =  ctx.guild
 
         if await utils.play_check(ctx) == False:
             return
@@ -148,9 +147,9 @@ class Musica(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @commands.command(name='stop', description=config.HELP_STOP_LONG, help=config.HELP_STOP_SHORT, aliases=['st'])
+    @discord.slash_command(name='stop', description=config.HELP_STOP_SHORT)
     async def _stop(self, ctx):
-        current_guild = utils.get_guild(self.bot, ctx.message)
+        current_guild = ctx.guild
 
         if await utils.play_check(ctx) == False:
             return
@@ -188,9 +187,9 @@ class Musica(commands.Cog):
             return
         await ctx.send("Moved successfully")
 
-    @commands.command(name='skip', description=config.HELP_SKIP_LONG, help=config.HELP_SKIP_SHORT, aliases=['s'])
+    @discord.slash_command(name='skip', description=config.HELP_SKIP_SHORT)
     async def _skip(self, ctx):
-        current_guild = utils.get_guild(self.bot, ctx.message)
+        current_guild = ctx.guild
 
         if await utils.play_check(ctx) == False:
             return
@@ -211,9 +210,9 @@ class Musica(commands.Cog):
         current_guild.voice_client.stop()
         await ctx.send("Skipping the current song :fast_forward:")
 
-    @commands.command(name='clear', description=config.HELP_CLEAR_LONG, help=config.HELP_CLEAR_SHORT, aliases=['cl'])
+    @discord.slash_command(name='clear', description=config.HELP_CLEAR_SHORT)
     async def _clear(self, ctx):
-        current_guild = utils.get_guild(self.bot, ctx.message)
+        current_guild = ctx.guild
 
         if await utils.play_check(ctx) == False:
             return

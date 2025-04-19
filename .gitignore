@@ -1,5 +1,6 @@
 *.pyc
 .env
+.venv
 myenv
 /run.sh
 /config/cookies/cookies.txt

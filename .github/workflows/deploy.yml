@@ -30,7 +30,6 @@ jobs:
 
         # Copy environment files to app directory
         cp -r $ENV_DIR/{*,.[^.]*} ./
-        source venv/bin/activate
         
         # Check if dependencies file has changed or does not exist
         CURRENT_HASH=$(md5sum $DEP_FILE | awk '{print $1}')
@@ -55,7 +54,7 @@ jobs:
         Type=simple
         User=pi
         WorkingDirectory=$APP_DIR
-        ExecStart=$APP_DIR/venv/bin/python $APP_DIR/run.py
+        ExecStart=/home/pi/.pyenv/versions/3.13.3/bin/python $APP_DIR/run.py
         Restart=on-failure
 
         [Install]

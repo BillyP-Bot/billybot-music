@@ -6,7 +6,7 @@ The one and only DJ BillyP!
 
 ## Setup
 
-1. Install and use Python 3.10.2 (optionally via [pyenv](https://github.com/pyenv/pyenv))
+1. Install and use Python 3.10.2 (optionally via `venv` or [pyenv](https://github.com/pyenv/pyenv))
 2. If running on Linux, install the following packages:
    - ffmpeg
    - libffi-dev
@@ -17,6 +17,7 @@ The one and only DJ BillyP!
    ```
 4. Create a `.env` file in root project folder:
    ```
+   ENVIRONMENT=dev
    BOT_TOKEN=*your discord bot token*
    ```
 5. Start the bot:
